@@ -1,5 +1,5 @@
 // Live-versie van de Python-collector (backend/app/collector.py), voor de knop "Data verversen".
-// Gedeeld door Netlify (netlify/functions/live.mts) en Vercel (api/live.js).
+// Gebruikt door de Vercel Function api/live.js.
 // Zelfde bronnen, berekeningen en risicoscore. Margin debt (FINRA, Excel-bestand)
 // wordt hier niet opgehaald; die komt uit de dagelijkse update.
 

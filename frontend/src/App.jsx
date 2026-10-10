@@ -22,7 +22,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    // Op Netlify/Vercel: eerst de gepubliceerde cijfers tonen, daarna meteen verse cijfers ophalen.
+    // Op Vercel: eerst de gepubliceerde cijfers tonen, daarna meteen verse cijfers ophalen.
     fetchOverview().then(() => isStaticSite() && useStore.getState().refreshLive(true))
     const timer = setInterval(fetchOverview, 5 * 60 * 1000) // elke 5 minuten verversen
     return () => clearInterval(timer)

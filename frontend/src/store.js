@@ -97,7 +97,7 @@ export const useStore = create((set, get) => ({
     }
   },
 
-  // Netlify: alle bronnen direct ophalen en de getoonde cijfers vervangen.
+  // Vercel: alle bronnen direct ophalen en de getoonde cijfers vervangen.
   // quiet = automatisch bij het openen van de site: alleen melden als er iets misgaat.
   async refreshLive(quiet = false) {
     set({ refreshing: true })

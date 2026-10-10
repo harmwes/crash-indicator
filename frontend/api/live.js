@@ -1,4 +1,5 @@
-// Vercel Function achter de knop "Data verversen" (zelfde werking als de Netlify-versie).
+// Vercel Function achter de knop "Data verversen": haalt de bronnen direct op en
+// geeft verse waarden, scores en historie terug.
 // Bereikbaar op /api/live. Maximale looptijd staat in vercel.json.
 import { handleLive } from '../shared/live-handler.mjs'
 

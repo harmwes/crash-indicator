@@ -29,52 +29,24 @@ vult de store met gesimuleerde data (duidelijk gemarkeerd in de app).
 
 Met Docker: `docker compose up --build` en open http://localhost:8080.
 
-## Online zetten met Netlify
+## Online zetten met Vercel
 
-Netlify host alleen statische bestanden, dus daar draait geen FastAPI-backend. In plaats daarvan:
+Vercel host de statische frontend plus één functie; de FastAPI-backend draait daar niet. In plaats daarvan:
 
-- `netlify.toml` bouwt de frontend met `VITE_STATIC_DATA=1`; de app leest dan JSON uit `frontend/public/data/`.
+- `frontend/vercel.json` bouwt de frontend met `npm run build:static`. Die leest `frontend/.env.static`
+  (`VITE_STATIC_DATA=1`), waardoor de app JSON uit `frontend/public/data/` leest.
 - `.github/workflows/update-data.yml` draait elke dag de Python-collector op GitHub, schrijft die JSON-bestanden
-  opnieuw en commit ze. Netlify bouwt bij elke commit vanzelf opnieuw.
+  opnieuw en commit ze. Vercel bouwt bij elke commit vanzelf opnieuw.
 
 Stappen:
 
-1. Push deze map naar een GitHub-repository.
-2. Netlify: **Add new site → Import an existing project → GitHub** en kies de repository. De instellingen komen uit `netlify.toml`.
-3. GitHub: **Settings → Actions → General → Workflow permissions → Read and write permissions**.
-4. GitHub: **Actions → Data bijwerken → Run workflow** om de eerste ronde te testen.
+1. Ga naar vercel.com, log in met GitHub en kies **Add New → Project**.
+2. Importeer de repository en zet **Root Directory** op `frontend`. De rest komt uit `vercel.json`.
+3. Klik op **Deploy**. Elke commit op GitHub, ook die van de dagelijkse update, zet Vercel vanzelf online.
+4. GitHub: **Settings → Actions → General → Workflow permissions → Read and write permissions**.
+5. GitHub: **Actions → Data bijwerken → Run workflow** om de eerste ronde te testen.
 
-### Knop "Data verversen" op Netlify
-
-Op de Netlify-site haalt de knop **Data verversen** de bronnen direct op via de Netlify Function
-`frontend/netlify/functions/live.mts` (adres `/api/live`). Die functie is een JavaScript-versie van de
-Python-collector met dezelfde berekeningen en drempels (`frontend/shared/collect.mjs`, gedeeld met Vercel); de drempels
-leest hij uit `/data/overview.json`, dus aanpassen doe je nog steeds alleen in `backend/app/indicators.py`.
-
-- Netlify bewaart het antwoord 5 minuten, zodat vaak klikken de bronnen niet overbelast.
-- Margin Debt (FINRA, Excel) wordt alleen door de dagelijkse update vernieuwd.
-- Lukt een bron niet, dan blijft voor die indicator de waarde van de laatste dagelijkse update staan en
-  meldt de app welke indicatoren niet zijn vernieuwd.
-- Bij het openen van de site worden verse cijfers automatisch één keer opgehaald; de knop doet dat
-  opnieuw op verzoek. De dagelijkse update blijft de basis als een bron niet antwoordt.
-
-Mislukt een bron op GitHub (Yahoo en multpl weigeren soms verzoeken van datacenters), dan blijft voor die indicator
-de laatst gepubliceerde waarde staan met de vermelding "ophalen mislukt, oudere data". De knop "Data verversen"
-is in deze modus verborgen.
-
-## Online zetten met Vercel
-
-Vercel werkt hetzelfde als Netlify: de frontend wordt statisch gebouwd en `/api/live` draait als
-Vercel Function (`frontend/api/live.js`). De instellingen staan in `frontend/vercel.json`.
-
-Via GitHub (aanbevolen, dan werkt ook de dagelijkse update):
-
-1. Zet deze map op GitHub (zie hierboven) en zet de workflow-rechten op lezen en schrijven.
-2. Ga naar vercel.com, log in met GitHub en kies **Add New → Project**.
-3. Importeer de repository en zet **Root Directory** op `frontend`. De rest komt uit `vercel.json`.
-4. Klik op **Deploy**. Elke commit op GitHub, ook die van de dagelijkse update, zet Vercel vanzelf online.
-
-Zonder GitHub, vanaf je eigen computer (Node.js nodig):
+Zonder GitHub-koppeling, vanaf je eigen computer (Node.js nodig):
 
 ```bash
 cd frontend
@@ -82,8 +54,22 @@ npx vercel login
 npx vercel --prod
 ```
 
-Dan is er geen dagelijkse update; de site haalt bij het openen en via de knop wel live cijfers op,
-behalve Margin Debt.
+### Knop "Data verversen"
+
+Op de Vercel-site haalt de knop **Data verversen** de bronnen direct op via de Vercel Function
+`frontend/api/live.js` (adres `/api/live`). Die functie is een JavaScript-versie van de
+Python-collector met dezelfde berekeningen en drempels (`frontend/shared/collect.mjs`); de drempels
+leest hij uit `/data/overview.json`, dus aanpassen doe je nog steeds alleen in `backend/app/indicators.py`.
+
+- Vercel bewaart het antwoord 5 minuten, zodat vaak klikken de bronnen niet overbelast.
+- Margin Debt (FINRA, Excel) wordt alleen door de dagelijkse update vernieuwd.
+- Lukt een bron niet, dan blijft voor die indicator de waarde van de laatste dagelijkse update staan en
+  meldt de app welke indicatoren niet zijn vernieuwd.
+- Bij het openen van de site worden verse cijfers automatisch één keer opgehaald; de knop doet dat
+  opnieuw op verzoek. De dagelijkse update blijft de basis als een bron niet antwoordt.
+
+Mislukt een bron op GitHub (Yahoo en multpl weigeren soms verzoeken van datacenters), dan blijft voor die indicator
+de laatst gepubliceerde waarde staan met de vermelding "ophalen mislukt, oudere data".
 
 ## Architectuur
 

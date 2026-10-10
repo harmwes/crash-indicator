@@ -1,4 +1,4 @@
-"""Statische export voor hosting zonder backend (Netlify).
+"""Statische export voor hosting zonder backend (Vercel).
 
   python export_static.py <map>             schrijft overview.json + <id>.json per indicator
   python export_static.py --restore <map>   vult de lokale store vanuit een eerdere export,

@@ -1,4 +1,4 @@
-// Gemeenschappelijke afhandeling van /api/live voor Netlify en Vercel.
+// Afhandeling van /api/live (Vercel Function api/live.js).
 import { collectAll } from './collect.mjs'
 
 export async function handleLive(req, cacheHeaders) {

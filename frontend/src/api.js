@@ -1,6 +1,6 @@
 // API-laag. Normaal praat de frontend met de FastAPI-gateway; als de pagina een
 // ingebakken momentopname bevat (window.__CRASH_SNAPSHOT__) wordt die gebruikt.
-// Met VITE_STATIC_DATA=1 (Netlify) leest de app vooraf gegenereerde JSON-bestanden uit /data.
+// Met VITE_STATIC_DATA=1 (Vercel) leest de app vooraf gegenereerde JSON-bestanden uit /data.
 const BASE = import.meta.env.VITE_API_URL || ''
 const STATIC = import.meta.env.VITE_STATIC_DATA === '1'
 const snap = () => (typeof window !== 'undefined' ? window.__CRASH_SNAPSHOT__ : null)
@@ -30,7 +30,7 @@ export async function getDetail(id) {
   return request(`/api/indicators/${id}?range=max`)
 }
 
-// Netlify: haalt alle bronnen direct op via de functie op /api/live (zie frontend/netlify/functions).
+// Vercel: haalt alle bronnen direct op via de functie op /api/live (zie frontend/api/live.js).
 export async function getLive() {
   const res = await fetch(BASE + '/api/live', { cache: 'no-store' })
   const body = await res.json().catch(() => ({}))
