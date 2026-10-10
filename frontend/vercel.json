@@ -4,7 +4,7 @@
   "buildCommand": "npm run build:static",
   "outputDirectory": "dist",
   "functions": {
-    "api/live.js": { "maxDuration": 60 }
+    "api/live.js": { "maxDuration": 60, "includeFiles": "public/data/overview.json" }
   },
   "headers": [
     {
