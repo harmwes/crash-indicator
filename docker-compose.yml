@@ -1,0 +1,20 @@
+# Drie services: dataverzameling (cronjob), API-gateway en frontend.
+services:
+  collector:
+    build: ./backend
+    command: ["python", "-m", "app.collector", "--daemon"]
+    environment: { DATA_DIR: /data, FETCH_TIME: "23:30", TZ_NAME: Europe/Amsterdam }
+    volumes: ["data:/data"]
+    restart: unless-stopped
+  api:
+    build: ./backend
+    environment: { DATA_DIR: /data, RUN_SCHEDULER: "0" }
+    volumes: ["data:/data"]
+    ports: ["8000:8000"]
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [api]
+volumes:
+  data:

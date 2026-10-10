@@ -1,0 +1,15 @@
+# Netlify bouwt alleen de frontend. De data staat als JSON in frontend/public/data
+# en wordt dagelijks bijgewerkt door .github/workflows/update-data.yml.
+[build]
+  base = "frontend"
+  command = "npm run build:static"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_STATIC_DATA = "1"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300"

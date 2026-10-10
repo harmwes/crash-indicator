@@ -1,0 +1,42 @@
+name: Data bijwerken
+
+on:
+  schedule:
+    - cron: "30 21 * * *"   # dagelijks 21:30 UTC (22:30/23:30 Amsterdam), na het slot in New York
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests openpyxl
+      - name: Tests
+        run: python tests/test_core.py
+      - name: Laatste goede data terugzetten
+        run: python export_static.py --restore ../frontend/public/data
+      - name: Bronnen ophalen
+        run: python -m app.collector
+      - name: Statische bestanden schrijven
+        run: python export_static.py ../frontend/public/data
+      - name: Committen als er iets veranderd is
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/public/data
+          git diff --cached --quiet || git commit -m "Data bijgewerkt $(date -u +%F)"
+          git push
